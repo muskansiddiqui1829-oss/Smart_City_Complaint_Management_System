@@ -51,7 +51,7 @@ export const authAPI = {
 
 // Complaint APIs
 export const complaintAPI = {
-  submit: (data) => api.post('/complaints', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  submit: (data) => api.post('/complaints', data),
   getAll: (params) => api.get('/complaints', { params }),
   getById: (id) => api.get(`/complaints/${id}`),
   getPublic: (params) => api.get('/complaints/public', { params }),

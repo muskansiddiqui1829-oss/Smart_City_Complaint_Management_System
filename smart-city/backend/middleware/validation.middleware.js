@@ -31,7 +31,22 @@ export const complaintValidation = [
   body('description').trim().notEmpty().withMessage('Description is required').isLength({ min: 20, max: 2000 }),
   body('category').notEmpty().withMessage('Category is required')
     .isIn(['roads', 'water', 'electricity', 'sanitation', 'parks', 'health', 'general', 'noise', 'illegal_construction', 'public_transport']),
-  body('location.address').notEmpty().withMessage('Location address is required'),
+  body('location')
+    .notEmpty().withMessage('Location is required')
+    .custom((value) => {
+      let location = value;
+      if (typeof location === 'string') {
+        try {
+          location = JSON.parse(location);
+        } catch (err) {
+          throw new Error('Location must be valid JSON');
+        }
+      }
+      if (!location || !location.address || !location.address.toString().trim()) {
+        throw new Error('Location address is required');
+      }
+      return true;
+    }),
 ];
 
 export const statusUpdateValidation = [
