@@ -29,6 +29,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:5173',
   'http://localhost:3000',
+  'https://smart-city-complaint-management-sys-six.vercel.app/'
 ].filter(Boolean);
 
 app.use(cors({
