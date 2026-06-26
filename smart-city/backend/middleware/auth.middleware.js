@@ -38,3 +38,5 @@ export const authorize = (...roles) => {
     next();
   };
 };
+
+export const isAuthenticated = protect;
