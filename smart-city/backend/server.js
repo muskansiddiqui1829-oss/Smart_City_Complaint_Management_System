@@ -11,7 +11,9 @@ import authRoutes from './routes/auth.routes.js';
 import complaintRoutes from './routes/complaint.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import userRoutes from './routes/user.routes.js';
+import officerRoutes from './routes/officer.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
+import { ComplaintRoutingBot } from './utils/bot.js';
 
 dotenv.config();
 
@@ -79,6 +81,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/officers', officerRoutes);
 
 // Error handling
 app.use(notFound);
@@ -87,6 +90,24 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+
+  // Initialize bot scheduler
+  if (process.env.NODE_ENV !== 'test') {
+    // Run complaint routing bot every 5 minutes
+    setInterval(async () => {
+      try {
+        logger.info('Running complaint routing bot...');
+        await ComplaintRoutingBot.routePendingComplaints(25);
+        await ComplaintRoutingBot.escalateOverdueComplaints();
+        await ComplaintRoutingBot.updateOfficerMetrics();
+        await ComplaintRoutingBot.autoCloseResolvedComplaints(7);
+      } catch (error) {
+        logger.error('Error in complaint routing bot:', error);
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
+    logger.info('Complaint routing bot initialized (runs every 5 minutes)');
+  }
 });
 
 // Handle unhandled promise rejections

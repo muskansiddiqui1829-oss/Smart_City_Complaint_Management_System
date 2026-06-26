@@ -21,6 +21,7 @@ import NotificationsPage from './pages/NotificationsPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminComplaints from './pages/admin/AdminComplaints';
 import AdminUsers from './pages/admin/AdminUsers';
+import ManageOfficersPage from './pages/admin/ManageOfficersPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Route guards
@@ -79,6 +80,7 @@ function AppRoutes() {
         <Route path="complaints" element={<AdminComplaints />} />
         <Route path="complaints/:id" element={<ComplaintDetailPage />} />
         <Route path="users" element={<AdminUsers />} />
+        <Route path="officers" element={<ManageOfficersPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

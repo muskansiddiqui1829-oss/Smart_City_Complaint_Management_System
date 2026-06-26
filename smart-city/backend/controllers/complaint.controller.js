@@ -212,25 +212,23 @@ export const updateComplaintStatus = asyncHandler(async (req, res, next) => {
     complaint: complaint._id,
   });
 
-  // Send email notification
-  try {
-    await sendEmail({
-      to: complaint.citizen.email,
-      subject: `Complaint Update - ${complaint.complaintId}`,
-      template: 'statusUpdate',
-      data: {
-        name: complaint.citizen.name,
-        complaintId: complaint.complaintId,
-        title: complaint.title,
-        previousStatus,
-        newStatus: status,
-        comment,
-        dashboardUrl: `${process.env.FRONTEND_URL}/complaints/${complaint._id}`,
-      },
-    });
-  } catch (err) {
+  // Send email notification asynchronously so status update is not delayed
+  sendEmail({
+    to: complaint.citizen.email,
+    subject: `Complaint Update - ${complaint.complaintId}`,
+    template: 'statusUpdate',
+    data: {
+      name: complaint.citizen.name,
+      complaintId: complaint.complaintId,
+      title: complaint.title,
+      previousStatus,
+      newStatus: status,
+      comment,
+      dashboardUrl: `${process.env.FRONTEND_URL}/complaints/${complaint._id}`,
+    },
+  }).catch((err) => {
     console.error('Email error:', err);
-  }
+  });
 
   res.status(200).json({ success: true, data: complaint });
 });

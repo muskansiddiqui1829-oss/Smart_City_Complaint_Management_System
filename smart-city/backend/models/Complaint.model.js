@@ -57,6 +57,16 @@ const complaintSchema = new mongoose.Schema({
     ref: 'User',
     default: null,
   },
+  assignedOfficer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Officer',
+    default: null,
+  },
+  officerAssignedAt: Date,
+  transfers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ComplaintTransfer',
+  }],
   department: {
     type: String,
     enum: ['roads', 'water', 'electricity', 'sanitation', 'parks', 'health', 'general', null],
