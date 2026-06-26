@@ -35,19 +35,21 @@ export const register = asyncHandler(async (req, res, next) => {
 
   const user = await User.create({ name, email, password, phone, ward });
 
-  // Send verification email (non-blocking)
+  // Send verification email asynchronously so response is not delayed
   try {
     const verificationToken = user.getEmailVerificationToken();
     await user.save({ validateBeforeSave: false });
     const verifyUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
-    await sendEmail({
+    sendEmail({
       to: user.email,
       subject: 'Smart City Platform - Verify Your Email',
       template: 'emailVerification',
       data: { name: user.name, verifyUrl },
+    }).catch((err) => {
+      console.error('Email send error:', err);
     });
   } catch (err) {
-    console.error('Email send error:', err);
+    console.error('Email setup error:', err);
   }
 
   sendTokenResponse(user, 201, res);

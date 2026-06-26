@@ -57,23 +57,21 @@ export const submitComplaint = asyncHandler(async (req, res, next) => {
     complaint: complaint._id,
   });
 
-  // Send confirmation email
-  try {
-    await sendEmail({
-      to: complaint.citizen.email,
-      subject: `Complaint Submitted - ${complaint.complaintId}`,
-      template: 'complaintSubmitted',
-      data: {
-        name: complaint.citizen.name,
-        complaintId: complaint.complaintId,
-        title: complaint.title,
-        category: complaint.category,
-        dashboardUrl: `${process.env.FRONTEND_URL}/complaints/${complaint._id}`,
-      },
-    });
-  } catch (err) {
+  // Send confirmation email asynchronously so response is not delayed
+  sendEmail({
+    to: complaint.citizen.email,
+    subject: `Complaint Submitted - ${complaint.complaintId}`,
+    template: 'complaintSubmitted',
+    data: {
+      name: complaint.citizen.name,
+      complaintId: complaint.complaintId,
+      title: complaint.title,
+      category: complaint.category,
+      dashboardUrl: `${process.env.FRONTEND_URL}/complaints/${complaint._id}`,
+    },
+  }).catch((err) => {
     console.error('Email error:', err);
-  }
+  });
 
   res.status(201).json({ success: true, data: complaint });
 });
